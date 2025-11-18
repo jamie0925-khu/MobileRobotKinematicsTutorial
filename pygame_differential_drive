@@ -1,194 +1,127 @@
-import math
 import pygame
+import math
 import numpy as np
 
-#시뮬레이션 파라미터
-r = 0.05   # wheel radius [m]
-a = 0.2    # half distance between wheels [m]
-dt = 0.02  # time step [s]
-steps = 3000  
-scale = 200   # m -> px (1 m = 200 px)
-
-#창 설정
+# Parameters
+r = 0.05    # wheel radius [m]
+a = 0.2     # half wheel spacing [m]
+dt = 0.02
+scale = 200
 WIDTH, HEIGHT = 900, 700
-BG_COLOR = (20, 22, 26)
-PATH_COLOR = (70, 160, 255)
-ROBOT_COLOR = (255, 220, 90)
-TEXT_COLOR = (200, 210, 220)
 
-#초기 상태 (월드 좌표: 미터)
 x, y, theta = 0.0, 0.0, 0.0
-path = [(x, y)]
+path = []
+phi_r_dot = 0.0
+phi_l_dot = 0.0
 
-#pygame 초기화
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Differential Drive Robot (pygame)")
 clock = pygame.time.Clock()
-font = pygame.font.SysFont("consolas", 16)
 
-#화면 중앙을 월드의 (0,0)으로 매핑
+# 좌표변환 
 def world_to_screen(wx, wy):
-    # 월드 y축이 위로 증가하도록, 화면 y축 반전
-    sx = WIDTH // 2 + int(wx * scale)
-    sy = HEIGHT // 2 - int(wy * scale)
+    sx = WIDTH//2 + int(wx * scale)
+    sy = HEIGHT//2 - int(wy * scale)
     return sx, sy
 
-def draw_grid(surf, spacing=0.1, color=(50, 50, 60)):
-    """
-    spacing: 격자 간격 [m]
-    color: 선 색상
-    """
-    # 화면 전체 범위를 월드 좌표로 변환
-    # (왼쪽 위, 오른쪽 아래)
-    wx_min = -(WIDTH // 2) / scale
-    wx_max = (WIDTH // 2) / scale
-    wy_min = -(HEIGHT // 2) / scale
-    wy_max = (HEIGHT // 2) / scale
-
-    #세로선 (x 고정)
-    x = math.floor(wx_min / spacing) * spacing
-    while x <= wx_max:
-        x1, y1 = world_to_screen(x, wy_min)
-        x2, y2 = world_to_screen(x, wy_max)
-        pygame.draw.line(surf, color, (x1, y1), (x2, y2), 1)
-        x += spacing
-
-    #가로선 (y 고정)
-    y = math.floor(wy_min / spacing) * spacing
-    while y <= wy_max:
-        x1, y1 = world_to_screen(wx_min, y)
-        x2, y2 = world_to_screen(wx_max, y)
-        pygame.draw.line(surf, color, (x1, y1), (x2, y2), 1)
-        y += spacing
-
-
-def draw_robot(surf, x, y, theta, wheel_base=2*a, radius=0.08):
-    #로봇 본체와 진행 방향을 그린다
+# 로봇 생성
+def draw_robot(surf, x, y, theta):
     cx, cy = world_to_screen(x, y)
-    body_radius_px = max(3, int(radius * scale))
-    pygame.draw.circle(surf, ROBOT_COLOR, (cx, cy), body_radius_px, width=2)
 
-    #진행 방향 라인
-    head_len = radius * 1.5
-    hx = x + head_len * math.cos(theta)
-    hy = y + head_len * math.sin(theta)
+    # 로봇 차체
+    pygame.draw.circle(surf, (255,180,90), (cx, cy), 12)
+    hx = x + 0.12 * math.cos(theta)
+    hy = y + 0.12 * math.sin(theta)
     hx_px, hy_px = world_to_screen(hx, hy)
-    pygame.draw.line(surf, ROBOT_COLOR, (cx, cy), (hx_px, hy_px), 2)
+    pygame.draw.line(surf, (255,255,150), (cx,cy), (hx_px,hy_px), 3)
 
-    #바퀴 위치 표시(옵션)
-    half_base = wheel_base / 2.0
-    #좌/우 바퀴 중심 (차체 중심에서 좌표)
-    left_wx = x - half_base * math.sin(theta)
-    left_wy = y + half_base * math.cos(theta)
-    right_wx = x + half_base * math.sin(theta)
-    right_wy = y - half_base * math.cos(theta)
-    lwx, lwy = world_to_screen(left_wx, left_wy)
-    rwx, rwy = world_to_screen(right_wx, right_wy)
-    pygame.draw.circle(surf, (180, 120, 255), (lwx, lwy), 3)
-    pygame.draw.circle(surf, (120, 255, 180), (rwx, rwy), 3)
+    # 로봇 좌우 방향 벡터 (theta에 수직)
+    side_x = -math.sin(theta)
+    side_y =  math.cos(theta)
 
-def select_scenario(num):
-    #바퀴 각속도 (오른쪽, 왼쪽) (rad/s)
-    if num == 1:
-        phi_r_dot = 2.0
-        phi_l_dot = 2.0
+    # 왼쪽 바퀴 좌표
+    wl_x = x + a * side_x
+    wl_y = y + a * side_y
+    wl_px, wl_py = world_to_screen(wl_x, wl_y)
+
+    # 오른쪽 바퀴 좌표
+    wr_x = x - a * side_x
+    wr_y = y - a * side_y
+    wr_px, wr_py = world_to_screen(wr_x, wr_y)
+
+    # 바퀴
+    pygame.draw.rect(surf, (200,200,200), (wl_px-6, wl_py-3, 12, 6))
+    pygame.draw.rect(surf, (200,200,200), (wr_px-6, wr_py-3, 12, 6))
+
+
+# 시나리오 선택 (제공된 자료기반)
+def select_scenario(num): 
+    #바퀴 각속도 (오른쪽, 왼쪽) (rad/s) 
+    if num == 1:    
+        phi_r_dot = 2.0 
+        phi_l_dot = 2.0 
+        return phi_r_dot, phi_l_dot 
+    
+    if num == 2: 
+        phi_r_dot = -2.0 
+        phi_l_dot = -2.0 
         return phi_r_dot, phi_l_dot
     
-    if num == 2:
-        phi_r_dot = -2.0
-        phi_l_dot = -2.0
-        return phi_r_dot, phi_l_dot
+    if num == 3: 
+        phi_r_dot = 4.0 
+        phi_l_dot = 2.0 
+        return phi_r_dot, phi_l_dot 
     
-    if num == 3:
-        phi_r_dot = 4.0
-        phi_l_dot = 2.0
-        return phi_r_dot, phi_l_dot
+    if num == 4: 
+        phi_r_dot = 2.0 
+        phi_l_dot = 4.0 
+        return phi_r_dot, phi_l_dot 
     
-    if num == 4:
-        phi_r_dot = 2.0
-        phi_l_dot = 4.0
-        return phi_r_dot, phi_l_dot
-    
-    if num == 5:
-        phi_r_dot = 2.0
-        phi_l_dot = -2.0
+    if num == 5: 
+        phi_r_dot = 2.0 
+        phi_l_dot = -2.0 
         return phi_r_dot, phi_l_dot
 
-
-def draw_path(surf, pts, color=PATH_COLOR):
-    if len(pts) < 2:
-        return
-    #월드 -> 스크린 변환 후 폴리라인
-    screen_pts = [world_to_screen(px, py) for (px, py) in pts]
-    pygame.draw.lines(surf, color, False, screen_pts, 2)
-
-def draw_hud(surf, v, omega, x, y, theta):
-    lines = [
-        f"x={x: .3f} m, y={y: .3f} m",
-        f"theta={theta: .3f} rad",
-        f"v={v: .3f} m/s, omega={omega: .3f} rad/s",
-        "ESC to quit",
-    ]
-    x0, y0 = 10, 10
-    for i, txt in enumerate(lines):
-        img = font.render(txt, True, TEXT_COLOR)
-        surf.blit(img, (x0, y0 + i * 18))
-
-def main():
-    global x, y, theta
-
-    running = True
-    step = 0
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_ESCAPE]:
+# 메인 루프
+running = True
+while running:
+    for e in pygame.event.get():
+        if e.type == pygame.QUIT:
             running = False
 
-        #바퀴 각속도 (오른쪽, 왼쪽) (rad/s)
-        phi_r_dot, phi_l_dot = select_scenario(5)  
+    # 시나리오 선택
+    phi_r_dot, phi_l_dot = select_scenario(5)
 
-        #자코비안 행렬
-        J = np.array([
-            [ (r/2.0)*math.cos(theta), (r/2.0)*math.cos(theta) ],
-            [ (r/2.0)*math.sin(theta), (r/2.0)*math.sin(theta) ],
-            [ (r/(2.0*a)),            -(r/(2.0*a))           ]
-        ])
 
-        # 로봇 속도 계산
-        dq = np.array([phi_r_dot, phi_l_dot])
-        dx, dy, dtheta = J @ dq
+    # 자코비안
+    J = np.array([
+        [(r/2)*math.cos(theta), (r/2)*math.cos(theta)],
+        [(r/2)*math.sin(theta), (r/2)*math.sin(theta)],
+        [(r/(2*a)),             -(r/(2*a))]
+    ])
+    
+    dq = np.array([phi_r_dot, phi_l_dot])
+    dx, dy, dtheta = J @ dq
 
-        #적분 
-        x += dx * dt
-        y += dy * dt
-        theta += dtheta * dt
+    x += dx*dt
+    y += dy*dt
+    theta += dtheta*dt
 
-        #각도 정규화 (-pi, pi)
-        theta = (theta + math.pi) % (2 * math.pi) - math.pi
+    # theta 정규화
+    theta = (theta + math.pi) % (2*math.pi) - math.pi
 
-        #경로 저장
-        path.append((x, y))
-        if len(path) > 5000:
-            del path[:1000]
+    # 경로기록
+    path.append((x, y))
 
-        #렌더링
-        screen.fill(BG_COLOR)
-        draw_grid(screen, spacing=0.1)
-        draw_path(screen, path)
-        draw_robot(screen, x, y, theta)
-        v = math.sqrt(dx**2 + dy**2)  # 선속도 크기
-        omega = dtheta
-        draw_hud(screen, v, omega, x, y, theta)
+    screen.fill((25,25,30))
 
-        pygame.display.flip()
-        clock.tick(int(1.0 / dt))
-        step += 1
+    if len(path) > 1:
+        pts = [world_to_screen(px,py) for px,py in path]
+        pygame.draw.lines(screen, (70,150,255), False, pts, 2)
 
-    pygame.quit()
+    draw_robot(screen, x, y, theta)
 
-if __name__ == "__main__":
-    main()
+    pygame.display.flip()
+    clock.tick(int(1/dt))
+
+pygame.quit()
