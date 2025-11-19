@@ -7,8 +7,8 @@
 2. [Tutorial2.pdf](https://github.com/user-attachments/files/23621787/Tutorial2.pdf)  
    **pygame_MecanumNOmni.py**  
    👉 https://github.com/jamie0925-khu/MobileRobotKinematicsTutorial/blob/main/pygame_MecanumNOmni.py  
-   **pygame_Swerve_drive**
-   👉 https://github.com/jamie0925-khu/MobileRobotKinematicsTutorial/blob/main/pygame_swerve.py
+   **pygame_Swerve.py**  
+   👉 https://github.com/jamie0925-khu/MobileRobotKinematicsTutorial/blob/main/pygame_Swerve.py
    
 3.  
 ---
