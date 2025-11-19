@@ -8,13 +8,13 @@
    **pygame_MecanumNOmni.py**  
    👉 https://github.com/jamie0925-khu/MobileRobotKinematicsTutorial/blob/main/pygame_MecanumNOmni.py  
    **pygame_Swerve.py**  
-   👉 https://github.com/jamie0925-khu/MobileRobotKinematicsTutorial/blob/main/pygame_Swerve.py
-   
-3.  [Tutorial3.pdf](https://github.com/user-attachments/files/23633972/Tutorial3.pdf)
-   **pygame_pure_pursuit.py**
-    👉 https://github.com/jamie0925-khu/MobileRobotKinematicsTutorial/blob/main/pygame_pure_pursuit.py
-   **pygame_stanley.py**
-    👉 https://github.com/jamie0925-khu/MobileRobotKinematicsTutorial/blob/main/pygame_stanley.py
+   👉 https://github.com/jamie0925-khu/MobileRobotKinematicsTutorial/blob/main/pygame_Swerve.py  
+
+3. [Tutorial3.pdf](https://github.com/user-attachments/files/23633972/Tutorial3.pdf)  
+   **pygame_pure_pursuit.py**  
+   👉 https://github.com/jamie0925-khu/MobileRobotKinematicsTutorial/blob/main/pygame_pure_pursuit.py  
+   **pygame_stanley.py**  
+   👉 https://github.com/jamie0925-khu/MobileRobotKinematicsTutorial/blob/main/pygame_stanley.py  
 
 ---
 
