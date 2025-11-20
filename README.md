@@ -18,7 +18,7 @@
 
 4. ssssss
    **pygame_pure_pursuit_revisited.py**
-   👉
+   👉 https://github.com/jamie0925-khu/MobileRobotKinematicsTutorial/blob/main/pygame_pure_pursuit_revisited.py
    **pygame_regulated_pure_pursuit.py**
    👉
 ---
