@@ -10,17 +10,19 @@
    **pygame_Swerve.py**  
    👉 https://github.com/jamie0925-khu/MobileRobotKinematicsTutorial/blob/main/pygame_Swerve.py  
 
-3. [Tutorial3.pdf](https://github.com/user-attachments/files/23633972/Tutorial3.pdf)  
-   **pygame_pure_pursuit.py**  
+3. [Tutorial3.pdf](https://github.com/user-attachments/files/23656287/Tutorial3.pdf) 
+  **pygame_pure_pursuit.py**  
    👉 https://github.com/jamie0925-khu/MobileRobotKinematicsTutorial/blob/main/pygame_pure_pursuit.py  
    **pygame_stanley.py**  
    👉 https://github.com/jamie0925-khu/MobileRobotKinematicsTutorial/blob/main/pygame_stanley.py  
 
-4. ssssss
-   **pygame_pure_pursuit_revisited.py**
+4. [Tutorial4.pdf](https://github.com/user-attachments/files/23656329/Tutorial4.pdf) 
+   **pygame_pure_pursuit_revisited.py** 
    👉 https://github.com/jamie0925-khu/MobileRobotKinematicsTutorial/blob/main/pygame_pure_pursuit_revisited.py
-   **pygame_regulated_pure_pursuit.py**
-   👉
+   **pygame_regulated_pure_pursuit.py** 
+   👉 https://github.com/jamie0925-khu/MobileRobotKinematicsTutorial/blob/main/pygame_regulated_pure_pursuit.py
+   **pygame_vector_pursuit.py** 
+   
 ---
 
 ### Tutorial YouTube
