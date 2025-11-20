@@ -23,11 +23,6 @@ def update_velocity(delta):
     return speed
 
 def linear_Interpolation(center, radius, p0, p1):
-    """
-    원(center, radius)과 선분 p0->p1의 교점을 계산.
-    선분 파라미터식: L(t) = p0 + t*(p1-p0), t in [0,1]
-    반환: 교점 중 로봇 중심에 가장 가까운 t(>=0)로 계산한 점. 없으면 None.
-    """
     center = np.array(center, dtype=float)
     p0 = np.array(p0, dtype=float)
     p1 = np.array(p1, dtype=float)
